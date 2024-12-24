@@ -1,19 +1,42 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/auth/Login';
+import { InjectPage } from './pages/dashboard/InjectPage';
+import { AccountPage } from './pages/dashboard/AccountPage';
+import { Navbar } from './components/Layout/Navbar';
+import { useAuth } from './hooks/useAuth';
 
-function App(): JSX.Element {
+export default function App() {
+  const { isAuthenticated } = useAuth();
+
   return (
-    <div className="App">
-      <div className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h2>Welcome to React/Electron</h2>
-      </div>
-      <p className="App-intro">
-        Hello Electron!
-      </p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {!isAuthenticated ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : (
+          <>
+            <Route
+              path="/"
+              element={
+                <div className="min-h-screen bg-[#1A103F]">
+                  <Navbar />
+                  <main className="ml-64 p-6">
+                    <Routes>
+                      <Route path="/inject" element={<InjectPage />} />
+                      <Route path="/account" element={<AccountPage />} />
+                      <Route path="*" element={<Navigate to="/inject" replace />} />
+                    </Routes>
+                  </main>
+                </div>
+              }
+            />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App; 
